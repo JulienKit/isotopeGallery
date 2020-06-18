@@ -40,8 +40,6 @@ Par défaut la galerie utilise une fonction "FetchImages" pour s'alimenter qui d
             "h": 0, // Hauteur
             // Photo vignette (thumbnail)
             "msrc":"", // Url
-            "mw": 0, // Largeur
-            "mh": 0, // Hauteur
             "filters": [ // Filtres de la photo
                 "", ...
             ]
@@ -54,7 +52,7 @@ Par défaut la galerie utilise une fonction "FetchImages" pour s'alimenter qui d
 
 Le composant nécessite 2 propriétés :
 * 'fetch' qui correspond au nom de la méthode qui sera appelé pour récupérer les datas. 
-* 'filterControl' qui correspond au nom du composant VueJS qui sera utilisé au dessus de la galerie pour intéragir avec les filtres.
+* 'filter-control' qui correspond au nom du composant VueJS qui sera utilisé au dessus de la galerie pour intéragir avec les filtres.
 
 exemple : 
 ```js 
@@ -91,7 +89,7 @@ Pour pouvoir déclencher le filtrage votre composant doit émettre un event "**f
       }
     } 
 ```
-Pour pouvoir tout afficher (comme une option "Tout") il faut passer à cette event l'indice "-1". 
+Pour pouvoir tout afficher (comme une option "Tout") il faut passer à cet event l'indice "-1". 
 ```js
     this.$emit("filtering", -1)
 ```
