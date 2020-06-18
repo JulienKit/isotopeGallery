@@ -1,19 +1,25 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <IsotopeGallery :filter-control="comp" fetch="FetchImages" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import IsotopeGallery from './components/IsotopeGallery.vue'
+import IstpFilterControlBar from "./components/IstpFilterControlBar.vue";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    IsotopeGallery,
+    IstpFilterControlBar //eslint-disable-line
+  },
+  data() {
+    return {
+      comp: IstpFilterControlBar
+    }
   }
-}
+} 
 </script>
 
 <style>
@@ -23,6 +29,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 2rem;
 }
 </style>
