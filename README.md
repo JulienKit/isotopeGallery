@@ -1,14 +1,15 @@
 # Isotope Gallery (VueJS)
 
-Affiche une galerie Masonry intéractif avec des filtres avec VueJS, Isotope, PhotoSwipe et est prévu pour être affiché avec Bootstrap.
+Affiche une galerie Masonry avec possibilité de filtrer les images.
 
-Construit avec un composant IsotopeGallery qui est indépendant des filtres, on peut lui fournir son propre composant permettant de contrôler les filtres.
-
-Le composant PhotoSwipe Pswp provient du travail de @ethanlixian : https://github.com/Leesson/v-photoswipe, juste les libellés des contrôles ont été traduits en français.
+La galerie au layout masonry est affichée et controlée avec la librairie [Isotope](https://isotope.metafizzy.co/). Les photos sont des thumbnails et la librairie 
+[PhotoSwipe](https://photoswipe.com/) permet d'ajouter de l'intéractivité en affichant au clic une version "grand format" de l'image et des contrôles au doigt sur smartphone.
 
 ## Get Started
 
-Intégrer le JS et le CSS : 
+La galerie peut être utilisée telle quelle une fois avoir construit les sources avec ```npm run build``` . 
+
+Pour cela il faut : intégrer le JS et le CSS : 
 
 ```html
 <link href="app.<cache>.css" rel="stylesheet">
@@ -16,56 +17,74 @@ Intégrer le JS et le CSS : 
 ```html
 <script src="app.<cache>.js"></script>
 ```
-Dans la page, intégrer un conteneur div#app :
+Dans une page, intégrer un conteneur div#app :
 ```html
 <div id="app"></div>
 ```
-Par défaut la galerie utilise une fonction "FetchImages" pour s'alimenter qui doit renvoyer un tableau de données sous la forme : 
+Et déclarer une fonction globale ```FetchImages()```  qui doit renvoyer la liste des images ainsi que les catégories de filtres sous la forme suivante : 
 ```js
 {
-    // Catégorie de filtre
+    // catégorie de filtre
     "categories": [
         {
             
-            "label": "", // Libellé du bouton
-            "filters": "" // Les filtres
+            "label": "", // libellé du filtre
+            "filters": "" // class associées aux filtres : ".fitre-1 .filtre-2"
         }
     ],
-    // La liste des photos
+    // liste des photos
     "items": [
         {
-            // Photo principal
-            "src": "", // Url
-            "w": 0, // Largeur
-            "h": 0, // Hauteur
-            // Photo vignette (thumbnail)
-            "msrc":"", // Url
-            "filters": [ // Filtres de la photo
+           
+            "src": "", // src de la photo principale
+            "w": 0, // largeur
+            "h": 0, // hauteur
+            "msrc":"", // src du thumbnail
+            "filters": [ // filtres de la photo comme défini dans categories.filters
                 "", ...
+                // "filtre-1",
+                // "filtre-2" ...
             ]
         }
     ]
 }
 ```
 
-## Intégration via le composant IsotopeGallery
+## Les composants en jeu
 
-Le composant nécessite 2 propriétés :
-* 'fetch' qui correspond au nom de la méthode qui sera appelé pour récupérer les datas. 
-* 'filter-control' qui correspond au nom du composant VueJS qui sera utilisé au dessus de la galerie pour intéragir avec les filtres.
+### le composant PhotoSwipe **Pswp.vue**
+
+Pswp provient du travail de @ethanlixian : https://github.com/Leesson/v-photoswipe, juste les libellés des contrôles ont été traduits en français.
+
+### le composant **IsotopeGallery.vue**
+
+Possède l'instance d'Isotope, affiche et contrôle la galerie. Utilise .Pswp ainsi qu'un composant de contrôle des filtres. 
+
+Le composant nécessite 2 propriétés pour fonctionner : 
+* ```fetch``` : nom de la méthode qui sera appelée pour récupérer les datas. 
+* ```filter-control``` : nom du composant qui sera placé au dessus de la galerie et qui permet de filtrer les images. 
 
 exemple : 
 ```js 
      <IsotopeGallery :filter-control="MonComposant" fetch="FetchImages" />
 ```
 
-## Créer son propre composant pour contrôler les filtres
+### le composant **IstpFilterControlBar.vue**
 
-Vous pouvez créer votre propre composant à passer à la propriété 'filter-control' de IsotopeGallery. 
+Affiche des boutons les uns à côtés des autres pour filtrer les images. 
 
-Il doit avoir une propriété 'filters' qui recevra du composant IsotopeGallery un tableau de chaîne correspondant aux différents filtres vous permettant de les afficher comme vous le souhaitez. 
 
-Exemple issu du composant IstpFilterControlBar qui boucle sur les filtres pour afficher des ```<button>```. 
+### Créer son propre composant pour contrôler les filtres
+
+Vous pouvez créer votre propre composant à passer à la propriété ```filter-control``` de ```<IsotopeGallery>```. 
+
+#### Propriété filtrer
+
+Ce composant devra avoir une propriété ```filters``` qui recevra du composant IsotopeGallery un tableau de chaîne correspondant aux différents filtres vous permettant de les afficher comme vous le souhaitez. 
+
+Cette prop est alimentée par ```<IsotopeGallery>``` via les datas récupérées par la prop ```fetch``` de celle-ci et correspondant à ```categories``` . 
+
+Exemple issu du composant **IstpFilterControlBar** qui boucle sur les filtres pour afficher des ```<button>```. 
 
 ```js
     <button
@@ -78,9 +97,9 @@ Exemple issu du composant IstpFilterControlBar qui boucle sur les filtres pour a
     >{{ label }}
     </button>
 ```
-### La méthode de filtre 
+#### L'évènement filtering
 
-Pour pouvoir déclencher le filtrage votre composant doit émettre un event "**filtering**" et lui donner en paramètre l'indice du filtre dans le tableau de la propriété _filters_: 
+Pour pouvoir déclencher le filtrage, votre composant doit émettre un event ```filtering``` et lui fournir en paramètre l'indice du filtre dans le tableau de la propriété _filters_: 
 ```js
     filter(id) {
       if (id !== this.$data.select) {
@@ -98,9 +117,9 @@ Pour pouvoir tout afficher (comme une option "Tout") il faut passer à cet event
 
 Le nombre de colonnes affichées par la galerie est modifiable dans le style du composant IsotopeGallery. 
 
-La variable map scss qui contrôle le nombre de colonnes se nomme ```$column``` . Elle prend en clé le breakpoint Bootstrap (sm, md, lg, xl ou xll) et en valeur le nombre de colonnes souhaité. 
+La variable map scss qui contrôle le nombre de colonnes se nomme ```$column``` . Elle prend en clé le breakpoint Bootstrap (```sm, md, lg, xl ou xll```) et en valeur le nombre de colonnes souhaitées. 
 
-exemple : 
+Par défaut : 
 ```scss
     $columns: (
         md: 4,
